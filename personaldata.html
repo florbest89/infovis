@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.16/d3.min.js"></script>
+    <!-- BOOTSTRAP -->
+	<script src="https://code.jquery.com/jquery.min.js"></script>
+	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+	<!-- DC StyleSheet -->
+	<link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/kevinkraus92/cc5ac08b30c244e54e2c96bbe5fea110/raw/608ea6bc5564c9705a6b3c41281b5dddc84b8879/dc.css"/>
+
+    <title>Infovis - Datos Personales</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="css/heroic-features.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <style>
+	    #wrap {
+		  width:1900px;
+		  margin:0 auto;
+		}
+
+		#leftColumn {
+		  width: 50%;
+		  float:left;
+		}
+		#right {
+		  margin-left:50%;
+		}
+		.clear {
+		  clear: both;
+		}
+		#piecharts {
+			width: 1300px;
+			height: 320px;			
+		}
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand">Infovis - Primer cuatrimestre 2016 - ITBA</a>
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <!-- Page Content -->
+    <div class="container">
+
+        <a href="index.html" class="btn btn-default backBtn">Volver</a>
+
+    </div>
+
+    <div>
+    	<img src="img\books.jpg" alt="" style="margin-left: 31%;">
+    	<p class="text-center">
+    		<a class="btn btn-primary btn-lg" 
+            href="javascript:   pieChartReadNotRead.filterAll();
+                      pieChartLanguage.filterAll();
+                      rowChartAuthor.filterAll();
+                      pieChartMovie.filterAll();
+                      barChartBooks.filterAll();
+                      dc.redrawAll();" role="button">
+                      Reiniciar
+          	</a>
+         </p>
+    </div>
+    <hr>
+
+	<div id="wrap">
+		<div id="leftColumn">
+			<div id="piecharts"> <!-- ROW 1 -->
+				<div class="col-md-2 data-block">
+					<legend>Leidos - No leidos</legend>
+					<div id='dc-pie-chart-readnotread'></div>
+				</div>
+				<div class="col-md-2 data-block ">
+					<legend>Idioma</legend>
+					<div id='dc-pie-chart-language'></div>
+				</div>
+				<div class="col-md-2 data-block">
+					<legend>Vi película</legend>
+					<div id='dc-pie-chart-movie'></div>
+				</div>
+			</div>
+			<div> <!-- ROW 2 -->
+				<div class="col-md-8 data-block">
+					<legend>Cantidad por Autor</legend>
+					<div id='dc-row-graph-author'></div>
+				</div>
+			</div>
+		</div>				
+
+		<div id="right">					
+			<div class="col-md-3">
+				<legend>Titulos</legend>
+				<div id='dc-row-graph-book'></div>
+			</div>
+		</div>	
+		<div class="clear"> </div>			
+	</div>
+
+    <!-- SCRIPTS -->
+    <!-- jQuery -->
+    <script src="js/jquery.js"></script>
+
+    <!-- D3 Libs -->
+	<script type="text/javascript" src="https://d3js.org/d3.v3.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.12/crossfilter.js"></script>
+	<script type="text/javascript" src="https://cdn.rawgit.com/kevinkraus92/ccfc1f0fc79f8c4f21fb93fd836b3bb8/raw/25d3bf7c727efef76ffbf1d319ab3d40be070932/dc.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.16/d3.min.js"></script>
+    <!-- BOOTSTRAP -->
+	<script src="https://code.jquery.com/jquery.min.js"></script>
+	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+
+    <script type="text/javascript">
+    	
+    'use strict';	
+    var data = [{"Titulo":"Kafka en la orilla","Autor":"Haruki Murakami","Publicacion":2002,"Genero":"Novela","Idioma":"Español","Saga":"Sin saga","Pelicula":"No","Lecturas":1},{"Titulo":"Tokio Blues","Autor":"Haruki Murakami","Publicacion":1987,"Genero":"Novela","Idioma":"Español","Saga":"Sin saga","Pelicula":"No","Lecturas":1},{"Titulo":"El fin del mundo","Autor":"Haruki Murakami","Publicacion":1985,"Genero":"Ficción","Idioma":"Español","Saga":"Sin saga","Pelicula":"No","Lecturas":0},{"Titulo":"Sauce ciego, mujer dormida","Autor":"Haruki Murakami","Publicacion":2006,"Genero":"Cuentos","Idioma":"Español","Saga":"Sin saga","Pelicula":"No","Lecturas":0},{"Titulo":"Heaven's net is wide","Autor":"Lian Hearn","Publicacion":2007,"Genero":"Fantástico","Idioma":"Inglés","Saga":"Tales of the Otori","Pelicula":"No","Lecturas":1},{"Titulo":"Across the nightingale floor","Autor":"Lian Hearn","Publicacion":2002,"Genero":"Fantástico","Idioma":"Inglés","Saga":"Tales of the Otori","Pelicula":"No","Lecturas":2},{"Titulo":"Grass for his pillow","Autor":"Lian Hearn","Publicacion":2003,"Genero":"Fantástico","Idioma":"Inglés","Saga":"Tales of the Otori","Pelicula":"No","Lecturas":2},{"Titulo":"Brilliance of the moon","Autor":"Lian Hearn","Publicacion":2004,"Genero":"Fantástico","Idioma":"Inglés","Saga":"Tales of the Otori","Pelicula":"No","Lecturas":2},{"Titulo":"The harsh cry of the heron","Autor":"Lian Hearn","Publicacion":2006,"Genero":"Fantástico","Idioma":"Inglés","Saga":"Tales of the Otori","Pelicula":"No","Lecturas":2},{"Titulo":"Flores y sombras","Autor":"Lian Hearn","Publicacion":2011,"Genero":"Fantástico","Idioma":"Español","Saga":"Sin saga","Pelicula":"No","Lecturas":1},{"Titulo":"El libro de los cinco anillos","Autor":"Miyamoto Musashi","Publicacion":1645,"Genero":"Ciencia militar","Idioma":"Español","Saga":"Sin saga","Pelicula":"No","Lecturas":1},{"Titulo":"Sumotori","Autor":"Gail Tukiyama","Publicacion":2008,"Genero":"Novela","Idioma":"Español","Saga":"Sin saga","Pelicula":"No","Lecturas":1},{"Titulo":"Los restos del día","Autor":"Kazuo Ishiguro","Publicacion":1989,"Genero":"Novela historica","Idioma":"Español","Saga":"Sin saga","Pelicula":"Si","Lecturas":1},{"Titulo":"Dinos cómo sobrevivir a nuestra locura","Autor":"Kenzaburo Oe","Publicacion":1966,"Genero":"Cuentos","Idioma":"Español","Saga":"Sin saga","Pelicula":"No","Lecturas":0},{"Titulo":"La leyenda del samurai","Autor":"Eiji Yoshikawa","Publicacion":2010,"Genero":"Novela historica","Idioma":"Español","Saga":"Musashi","Pelicula":"No","Lecturas":1},{"Titulo":"El camino de la espada","Autor":"Eiji Yoshikawa","Publicacion":2010,"Genero":"Novela historica","Idioma":"Español","Saga":"Musashi","Pelicula":"No","Lecturas":1},{"Titulo":"El honor del samurai","Autor":"Takasi Matsuoka","Publicacion":2002,"Genero":"Novela historica","Idioma":"Español","Saga":"Sin saga","Pelicula":"No","Lecturas":1},{"Titulo":"Bushido","Autor":"Inazo Nitobe","Publicacion":1905,"Genero":"Ciencia militar","Idioma":"Español","Saga":"Sin saga","Pelicula":"No","Lecturas":1},{"Titulo":"El arte de la guerra","Autor":"Sun Tzu","Publicacion":null,"Genero":"Ciencia militar","Idioma":"Español","Saga":"Sin saga","Pelicula":"No","Lecturas":0},{"Titulo":"Dr. Jekyll y Mr. Hide","Autor":"R. Stevenson","Publicacion":1886,"Genero":"Novela","Idioma":"Español","Saga":"Sin saga","Pelicula":"No","Lecturas":1},{"Titulo":"Dracula","Autor":"B. Stoker","Publicacion":1897,"Genero":"Novela","Idioma":"Español","Saga":"Sin saga","Pelicula":"No","Lecturas":0},{"Titulo":"Fausto","Autor":"Goethe","Publicacion":1808,"Genero":"Tragedia","Idioma":"Español","Saga":"Sin saga","Pelicula":"No","Lecturas":0},{"Titulo":"Rashomon y otros cuentos","Autor":"R. Akutagawa","Publicacion":1917,"Genero":"Cuentos","Idioma":"Español","Saga":"Sin saga","Pelicula":"No","Lecturas":0},{"Titulo":"El retrato de Dorian Gray","Autor":"Oscar Wilde","Publicacion":1890,"Genero":"Novela","Idioma":"Español","Saga":"Sin saga","Pelicula":"No","Lecturas":0},{"Titulo":"La divina comedia","Autor":"Dante Alighieri","Publicacion":1555,"Genero":"Poesia","Idioma":"Español","Saga":"Sin saga","Pelicula":"No","Lecturas":0},{"Titulo":"Persuasion","Autor":"Jane Austen","Publicacion":1817,"Genero":"Novela","Idioma":"Inglés","Saga":"Sin saga","Pelicula":"Si","Lecturas":1},{"Titulo":"Emma","Autor":"Jane Austen","Publicacion":1815,"Genero":"Novela","Idioma":"Inglés","Saga":"Sin saga","Pelicula":"Si","Lecturas":1},{"Titulo":"Sense and sensibility","Autor":"Jane Austen","Publicacion":1811,"Genero":"Novela","Idioma":"Inglés","Saga":"Sin saga","Pelicula":"Si","Lecturas":1},{"Titulo":"Mansfield Park","Autor":"Jane Austen","Publicacion":1814,"Genero":"Novela","Idioma":"Inglés","Saga":"Sin saga","Pelicula":"Si","Lecturas":1},{"Titulo":"Pride and prejudice","Autor":"Jane Austen","Publicacion":1813,"Genero":"Novela","Idioma":"Inglés","Saga":"Sin saga","Pelicula":"Si","Lecturas":2},{"Titulo":"Jane Eyre","Autor":"Charlotte Bronte","Publicacion":1847,"Genero":"Novela","Idioma":"Inglés","Saga":"Sin saga","Pelicula":"Si","Lecturas":1},{"Titulo":"Alice in wonderland","Autor":"Lewis Carroll","Publicacion":1865,"Genero":"Literatura infantil","Idioma":"Inglés","Saga":"Sin saga","Pelicula":"Si","Lecturas":1},{"Titulo":"Alicia a través del espejo","Autor":"Lewis Carroll","Publicacion":1871,"Genero":"Literatura infantil","Idioma":"Inglés","Saga":"Sin saga","Pelicula":"No","Lecturas":1},{"Titulo":"The Silmarillion","Autor":"J.R.R Tolkien","Publicacion":1977,"Genero":"Fantástico","Idioma":"Inglés","Saga":"Sin saga","Pelicula":"No","Lecturas":2},{"Titulo":"The Hobbit","Autor":"J.R.R Tolkien","Publicacion":1937,"Genero":"Fantástico","Idioma":"Inglés","Saga":"Sin saga","Pelicula":"Si","Lecturas":2},{"Titulo":"The fellowship of the ring","Autor":"J.R.R Tolkien","Publicacion":1954,"Genero":"Fantástico","Idioma":"Inglés","Saga":"Lord of The Rings","Pelicula":"Si","Lecturas":2},{"Titulo":"The two towers","Autor":"J.R.R Tolkien","Publicacion":1954,"Genero":"Fantástico","Idioma":"Inglés","Saga":"Lord of The Rings","Pelicula":"Si","Lecturas":2},{"Titulo":"The return of the king","Autor":"J.R.R Tolkien","Publicacion":1955,"Genero":"Fantástico","Idioma":"Inglés","Saga":"Lord of The Rings","Pelicula":"Si","Lecturas":2},{"Titulo":"Unfinished tales","Autor":"J.R.R Tolkien & Cristopher Tolkien","Publicacion":1980,"Genero":"Fantástico","Idioma":"Inglés","Saga":"Sin saga","Pelicula":"No","Lecturas":1},{"Titulo":"The tales of Beedle the Bard","Autor":"J.K Rowling","Publicacion":2007,"Genero":"Fantástico","Idioma":"Inglés","Saga":"Sin saga","Pelicula":"No","Lecturas":1},{"Titulo":"Harry Potter y la piedra filosofal","Autor":"J.K Rowling","Publicacion":1997,"Genero":"Fantástico","Idioma":"Español","Saga":"Harry Potter","Pelicula":"Si","Lecturas":1},{"Titulo":"Harry Potter y la cámara secreta","Autor":"J.K Rowling","Publicacion":1998,"Genero":"Fantástico","Idioma":"Español","Saga":"Harry Potter","Pelicula":"Si","Lecturas":1},{"Titulo":"Harry Potter y el prisionero de Azkaban","Autor":"J.K Rowling","Publicacion":1999,"Genero":"Fantástico","Idioma":"Español","Saga":"Harry Potter","Pelicula":"Si","Lecturas":1},{"Titulo":"Harry Potter y el cáliz de fuego","Autor":"J.K Rowling","Publicacion":2000,"Genero":"Fantástico","Idioma":"Español","Saga":"Harry Potter","Pelicula":"Si","Lecturas":2},{"Titulo":"Harry Potter and the Order of the Phoenix","Autor":"J.K Rowling","Publicacion":2003,"Genero":"Fantástico","Idioma":"Inglés","Saga":"Harry Potter","Pelicula":"Si","Lecturas":2},{"Titulo":"Harry Potter and the Half Blood Prince","Autor":"J.K Rowling","Publicacion":2005,"Genero":"Fantástico","Idioma":"Inglés","Saga":"Harry Potter","Pelicula":"Si","Lecturas":2},{"Titulo":"Harry Potter and the deadly hollows","Autor":"J.K Rowling","Publicacion":2007,"Genero":"Fantástico","Idioma":"Inglés","Saga":"Harry Potter","Pelicula":"Si","Lecturas":2},{"Titulo":"Eragon","Autor":"Christopher Paolini","Publicacion":2001,"Genero":"Fantástico","Idioma":"Inglés","Saga":"Eragon","Pelicula":"Si","Lecturas":0},{"Titulo":"Eldest","Autor":"Christopher Paolini","Publicacion":2005,"Genero":"Fantástico","Idioma":"Inglés","Saga":"Eragon","Pelicula":"No","Lecturas":0},{"Titulo":"Brisingr","Autor":"Christopher Paolini","Publicacion":2008,"Genero":"Fantástico","Idioma":"Inglés","Saga":"Eragon","Pelicula":"No","Lecturas":0},{"Titulo":"Memorias de una geisha","Autor":"Arthur Golden","Publicacion":1997,"Genero":"Novela historica","Idioma":"Español","Saga":"Sin saga","Pelicula":"Si","Lecturas":1},{"Titulo":"La guerra contra Nobunaga","Autor":"Ryo Wada","Publicacion":2014,"Genero":"Novela historica","Idioma":"Español","Saga":"La hija de los pirata Murakami","Pelicula":"No","Lecturas":1},{"Titulo":"Las Normas de César Millán","Autor":"César Millán","Publicacion":2011,"Genero":"General","Idioma":"Español","Saga":"Sin saga","Pelicula":"No","Lecturas":0}];
+
+    	// 2 - Create Graphs
+		//var bubbleChart = dc.bubbleChart("#dc-bubble-graph");
+		//var volumeChart = dc.barChart("#dc-volume-chart");
+		//var lineChart = dc.lineChart("#dc-line-chart");
+		//var dataTable = dc.dataTable("#dc-table-graph");
+		//var nasdaqCount = dc.dataCount('.dc-data-count');
+		var pieChartReadNotRead = dc.pieChart("#dc-pie-chart-readnotread");
+		var pieChartLanguage = dc.pieChart("#dc-pie-chart-language");
+		var rowChartAuthor = dc.rowChart("#dc-row-graph-author");		
+		var pieChartMovie = dc.pieChart("#dc-pie-chart-movie");
+		var barChartBooks = dc.rowChart("#dc-row-graph-book");
+
+
+		// 3 - Run Data thorugh crossfilters
+		var ndx = crossfilter(data);
+
+		// 4 - Create Dimensions for Visualizations
+
+		//For Total Books display
+		var total_books = ndx.groupAll().reduceCount().value();
+		console.log("Total Books: " + total_books + ".");
+
+		//For Total Achievments
+		var read_books = ndx.groupAll().reduceSum(function(book) { return book.Lecturas > 0 ? 1 : 0; }).value();
+		var notread_books = ndx.groupAll().reduceSum(function(book) { return book.Lecturas == 0 ? 1 : 0; }).value(); 
+		var read_total = ndx.groupAll().reduceSum(function(book) { return book.Lecturas; }).value();
+		console.log("Books read: " + read_books + " - Not read: " + notread_books + ".");
+
+		//For Read Pie Chart
+		var readnotreadDimension = ndx.dimension(function(book) { return book.Lecturas > 0 ? "Leidos" : "No leidos"; });
+		var readnotreadGroup = readnotreadDimension.group().reduceCount();
+
+		//For Language Pie Chart
+		var languageDimension = ndx.dimension(function(book) { return book.Idioma; });
+		var languageGroup = languageDimension.group().reduceCount();
+
+		//For Author Row Chart
+		var authorDimension = ndx.dimension(function(book) { return book.Autor; });
+		var authorGroup = authorDimension.group().reduceCount();
+
+		//For Book Chart
+		var booksDimension = ndx.dimension(function(book) { return book.Titulo; });
+		var booksGroup = booksDimension.group().reduceCount();
+
+		//For Author Pie Chart
+		var movieDimension = ndx.dimension(function(book) { return book.Pelicula; });
+		var movieGroup = movieDimension.group().reduceCount();
+
+		// 5 - Create Visualizations
+
+		//For Read - Not Read Pie Chart
+		pieChartReadNotRead
+				.width(200)
+				.height(200)
+			    .dimension(readnotreadDimension)
+			    .group(readnotreadGroup)
+			    .innerRadius(20)
+			    .ordinalColors(['#D67FFF','#21007F']);
+
+		//For Language Pie Chart pieChartLanguage
+		pieChartLanguage
+				.width(200)
+				.height(200)
+			    .dimension(languageDimension)
+			    .group(languageGroup)
+			    .innerRadius(20)
+			    .ordinalColors(['#007F7F','#FF6A00']);
+
+		//For Author Row Chart
+		rowChartAuthor
+				.width(1000)
+		        .height(580)
+		        .dimension(authorDimension)
+		        .group(authorGroup)
+				.renderLabel(true)
+		        .title(function (d) {
+		            return d.value;
+		        })
+		        .x(d3.scale.linear().domain([1,8]))
+		        .ordinalColors(d3.scale.category20b().range())
+		        .elasticX(true)
+		        .xAxis().ticks(0);
+
+		//For Movie Pie Chart
+		pieChartMovie
+				.width(200)
+				.height(200)
+			    .dimension(movieDimension)
+			    .group(movieGroup)
+			    .innerRadius(20)
+			    .renderLabel(true)
+			    .ordinalColors(['#0094FF','#FF006E']);
+
+		//For Book Row Chart
+		barChartBooks
+				.width(350)
+		        .height(900)
+		        .dimension(booksDimension)
+		        .group(booksGroup)
+				.renderLabel(true)
+		        .title(function (d) {
+		            return d.value;
+		        })
+		        .ordinalColors(d3.scale.category20b().range())
+		        .elasticX(true)
+		        .xAxis().ticks(0);
+
+		// 5 - Render Charts
+		dc.renderAll();            
+    </script>
+
+</body>
+
+</html>

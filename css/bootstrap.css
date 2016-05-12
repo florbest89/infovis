@@ -12,6 +12,7 @@ html {
 body {
   margin: 0;
 }
+
 article,
 aside,
 details,
@@ -6436,6 +6437,12 @@ button.close {
 }
 .carousel-caption .btn {
   text-shadow: none;
+}
+
+.data-block {
+    margin-left: 10px !important;
+    margin-top: 30px !important;
+    margin-right: 10px !important;
 }
 @media screen and (min-width: 768px) {
   .carousel-control .glyphicon-chevron-left,
